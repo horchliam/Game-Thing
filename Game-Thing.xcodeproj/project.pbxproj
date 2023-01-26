@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		330199B82980B4CF000CE96E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 330199B72980B4CF000CE96E /* main.cpp */; };
+		330199C0298211AE000CE96E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 330199BF298211AE000CE96E /* OpenGL.framework */; };
+		330199C22982123A000CE96E /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 330199C12982123A000CE96E /* libglfw.3.3.dylib */; };
+		330199C629821255000CE96E /* libGLEW.2.2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 330199C529821255000CE96E /* libGLEW.2.2.0.dylib */; };
+		3368E723298213B70074B885 /* libGLEW.2.2.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 330199C529821255000CE96E /* libGLEW.2.2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		3368E725298213B90074B885 /* libglfw.3.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 330199C12982123A000CE96E /* libglfw.3.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		3368E7272982155D0074B885 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 3368E7262982155D0074B885 /* glad.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -20,11 +26,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		3368E724298213B80074B885 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3368E725298213B90074B885 /* libglfw.3.3.dylib in Embed Libraries */,
+				3368E723298213B70074B885 /* libGLEW.2.2.0.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		330199B42980B4CF000CE96E /* Game-Thing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Game-Thing"; sourceTree = BUILT_PRODUCTS_DIR; };
 		330199B72980B4CF000CE96E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		330199BF298211AE000CE96E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		330199C12982123A000CE96E /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../usr/local/Cellar/glfw/3.3.8/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
+		330199C529821255000CE96E /* libGLEW.2.2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.2.0.dylib; path = ../../../../usr/local/Cellar/glew/2.2.0_1/lib/libGLEW.2.2.0.dylib; sourceTree = "<group>"; };
+		3368E7262982155D0074B885 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = ../../Downloads/glad/src/glad.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +54,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				330199C22982123A000CE96E /* libglfw.3.3.dylib in Frameworks */,
+				330199C629821255000CE96E /* libGLEW.2.2.0.dylib in Frameworks */,
+				330199C0298211AE000CE96E /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,8 +66,10 @@
 		330199AB2980B4CF000CE96E = {
 			isa = PBXGroup;
 			children = (
+				3368E7262982155D0074B885 /* glad.c */,
 				330199B62980B4CF000CE96E /* Game-Thing */,
 				330199B52980B4CF000CE96E /* Products */,
+				330199BE298211AE000CE96E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,6 +89,16 @@
 			path = "Game-Thing";
 			sourceTree = "<group>";
 		};
+		330199BE298211AE000CE96E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				330199C529821255000CE96E /* libGLEW.2.2.0.dylib */,
+				330199C12982123A000CE96E /* libglfw.3.3.dylib */,
+				330199BF298211AE000CE96E /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -72,6 +109,7 @@
 				330199B02980B4CF000CE96E /* Sources */,
 				330199B12980B4CF000CE96E /* Frameworks */,
 				330199B22980B4CF000CE96E /* CopyFiles */,
+				3368E724298213B80074B885 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -120,6 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				330199B82980B4CF000CE96E /* main.cpp in Sources */,
+				3368E7272982155D0074B885 /* glad.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +280,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XH7F8TV6LS;
 				ENABLE_HARDENED_RUNTIME = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = " /usr/local/include";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/glfw/3.3.8/lib,
+					/usr/local/Cellar/glew/2.2.0_1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -251,6 +296,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XH7F8TV6LS;
 				ENABLE_HARDENED_RUNTIME = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = " /usr/local/include";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/glfw/3.3.8/lib,
+					/usr/local/Cellar/glew/2.2.0_1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
