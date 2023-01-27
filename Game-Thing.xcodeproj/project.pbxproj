@@ -14,6 +14,7 @@
 		3368E723298213B70074B885 /* libGLEW.2.2.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 330199C529821255000CE96E /* libGLEW.2.2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		3368E725298213B90074B885 /* libglfw.3.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 330199C12982123A000CE96E /* libglfw.3.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		3368E7272982155D0074B885 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 3368E7262982155D0074B885 /* glad.c */; };
+		3368E72D29843D3C0074B885 /* WindowManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E72B29843D3C0074B885 /* WindowManager.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,6 +48,9 @@
 		330199C12982123A000CE96E /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../usr/local/Cellar/glfw/3.3.8/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
 		330199C529821255000CE96E /* libGLEW.2.2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.2.0.dylib; path = ../../../../usr/local/Cellar/glew/2.2.0_1/lib/libGLEW.2.2.0.dylib; sourceTree = "<group>"; };
 		3368E7262982155D0074B885 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = ../../Downloads/glad/src/glad.c; sourceTree = "<group>"; };
+		3368E728298438320074B885 /* Window.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Window.hpp; sourceTree = "<group>"; };
+		3368E72B29843D3C0074B885 /* WindowManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WindowManager.cpp; sourceTree = "<group>"; };
+		3368E72C29843D3C0074B885 /* WindowManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowManager.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +89,9 @@
 			isa = PBXGroup;
 			children = (
 				330199B72980B4CF000CE96E /* main.cpp */,
+				3368E728298438320074B885 /* Window.hpp */,
+				3368E72B29843D3C0074B885 /* WindowManager.cpp */,
+				3368E72C29843D3C0074B885 /* WindowManager.hpp */,
 			);
 			path = "Game-Thing";
 			sourceTree = "<group>";
@@ -106,10 +113,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 330199BB2980B4CF000CE96E /* Build configuration list for PBXNativeTarget "Game-Thing" */;
 			buildPhases = (
-				330199B02980B4CF000CE96E /* Sources */,
 				330199B12980B4CF000CE96E /* Frameworks */,
 				330199B22980B4CF000CE96E /* CopyFiles */,
 				3368E724298213B80074B885 /* Embed Libraries */,
+				330199B02980B4CF000CE96E /* Sources */,
 			);
 			buildRules = (
 			);
@@ -159,6 +166,7 @@
 			files = (
 				330199B82980B4CF000CE96E /* main.cpp in Sources */,
 				3368E7272982155D0074B885 /* glad.c in Sources */,
+				3368E72D29843D3C0074B885 /* WindowManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
