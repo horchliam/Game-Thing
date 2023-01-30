@@ -51,6 +51,9 @@
 		3368E728298438320074B885 /* Window.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Window.hpp; sourceTree = "<group>"; };
 		3368E72B29843D3C0074B885 /* WindowManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WindowManager.cpp; sourceTree = "<group>"; };
 		3368E72C29843D3C0074B885 /* WindowManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowManager.hpp; sourceTree = "<group>"; };
+		3368E72E2987219F0074B885 /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
+		3368E730298775580074B885 /* monkeyJuice.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = monkeyJuice.jpg; sourceTree = "<group>"; };
+		3368E731298777CB0074B885 /* container.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = container.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,10 +91,13 @@
 		330199B62980B4CF000CE96E /* Game-Thing */ = {
 			isa = PBXGroup;
 			children = (
+				3368E731298777CB0074B885 /* container.jpg */,
+				3368E730298775580074B885 /* monkeyJuice.jpg */,
 				330199B72980B4CF000CE96E /* main.cpp */,
 				3368E728298438320074B885 /* Window.hpp */,
 				3368E72B29843D3C0074B885 /* WindowManager.cpp */,
 				3368E72C29843D3C0074B885 /* WindowManager.hpp */,
+				3368E72E2987219F0074B885 /* stb_image.h */,
 			);
 			path = "Game-Thing";
 			sourceTree = "<group>";

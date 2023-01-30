@@ -1,6 +1,8 @@
 // External libraries
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // My headers
 #include "Window.hpp"
@@ -8,6 +10,7 @@
 
 // Stds
 #include <iostream>
+#include <filesystem>
 
 void processInput(GLFWwindow *window);
 
@@ -18,22 +21,35 @@ GLFWwindow* window;
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+//*vec4(0.5f, 0.5f, 1.0f, 1.0f)
+
 // Temp
 const char *vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec3 aColor;\n"
+"layout (location = 2) in vec2 aTexCoord;\n"
+"out vec4 ourColor;\n"
+"out vec2 texCoord;\n"
 "void main()\n"
 "{\n"
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   ourColor = vec4(aColor.x, aColor.y, aColor.z, 1.0);\n"
+"   texCoord = vec2(aTexCoord.x, 1.0f - aTexCoord.y);\n"
 "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"in vec4 ourColor;\n"
+"in vec2 texCoord;\n"
+"uniform sampler2D myTexture;"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = mix(texture(myTexture, texCoord), ourColor, 0.5);\n"
 "}\n\0";
 
 int main()
 {
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::cout << cwd << std::endl;
     WindowManager wm = WindowManager(SCR_WIDTH, SCR_HEIGHT);
     if(!wm.SetupWindow()) { return 0; }
     
@@ -84,17 +100,40 @@ int main()
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
     
+    // Setting up texture
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("monkeyJuice.jpg", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        std::cout << width << " and " << height << std::endl;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+    glUseProgram(shaderProgram);
+    glUniform1i(glGetUniformLocation(shaderProgram, "myTexture"), 0);
+    
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        0.5f,  0.5f, 0.0f,  // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left
+        // positions          // colors           // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
     };
     unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
+        3, 2, 1,  // first Triangle
+        3, 0, 1   // second Triangle
     };
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -109,8 +148,14 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
     
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -122,6 +167,10 @@ int main()
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
     
+    const GLubyte* renderer = glGetString (GL_RENDERER);
+    const GLubyte* version = glGetString (GL_VERSION);
+    printf ("Renderer: %s\n", renderer);
+    printf ("OpenGL version supported %s\n", version);
     
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
