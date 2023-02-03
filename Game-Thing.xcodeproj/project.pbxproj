@@ -15,6 +15,10 @@
 		3368E725298213B90074B885 /* libglfw.3.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 330199C12982123A000CE96E /* libglfw.3.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		3368E7272982155D0074B885 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 3368E7262982155D0074B885 /* glad.c */; };
 		3368E72D29843D3C0074B885 /* WindowManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E72B29843D3C0074B885 /* WindowManager.cpp */; };
+		3368E735298DB7540074B885 /* game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E733298DB7540074B885 /* game.cpp */; };
+		3368E738298DB7AF0074B885 /* resource_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E736298DB7AF0074B885 /* resource_manager.cpp */; };
+		3368E73B298DB82F0074B885 /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E739298DB82F0074B885 /* texture.cpp */; };
+		3368E73E298DB8560074B885 /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E73C298DB8560074B885 /* shader.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +55,15 @@
 		3368E728298438320074B885 /* Window.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Window.hpp; sourceTree = "<group>"; };
 		3368E72B29843D3C0074B885 /* WindowManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WindowManager.cpp; sourceTree = "<group>"; };
 		3368E72C29843D3C0074B885 /* WindowManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowManager.hpp; sourceTree = "<group>"; };
+		3368E733298DB7540074B885 /* game.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = game.cpp; sourceTree = "<group>"; };
+		3368E734298DB7540074B885 /* game.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = game.h; sourceTree = "<group>"; };
+		3368E736298DB7AF0074B885 /* resource_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = resource_manager.cpp; sourceTree = "<group>"; };
+		3368E737298DB7AF0074B885 /* resource_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resource_manager.h; sourceTree = "<group>"; };
+		3368E739298DB82F0074B885 /* texture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = texture.cpp; sourceTree = "<group>"; };
+		3368E73A298DB82F0074B885 /* texture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = texture.h; sourceTree = "<group>"; };
+		3368E73C298DB8560074B885 /* shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
+		3368E73D298DB8560074B885 /* shader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shader.h; sourceTree = "<group>"; };
+		3368E73F298DB8CC0074B885 /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +105,15 @@
 				3368E728298438320074B885 /* Window.hpp */,
 				3368E72B29843D3C0074B885 /* WindowManager.cpp */,
 				3368E72C29843D3C0074B885 /* WindowManager.hpp */,
+				3368E733298DB7540074B885 /* game.cpp */,
+				3368E734298DB7540074B885 /* game.h */,
+				3368E736298DB7AF0074B885 /* resource_manager.cpp */,
+				3368E737298DB7AF0074B885 /* resource_manager.h */,
+				3368E739298DB82F0074B885 /* texture.cpp */,
+				3368E73A298DB82F0074B885 /* texture.h */,
+				3368E73C298DB8560074B885 /* shader.cpp */,
+				3368E73D298DB8560074B885 /* shader.h */,
+				3368E73F298DB8CC0074B885 /* stb_image.h */,
 			);
 			path = "Game-Thing";
 			sourceTree = "<group>";
@@ -164,9 +186,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3368E73E298DB8560074B885 /* shader.cpp in Sources */,
 				330199B82980B4CF000CE96E /* main.cpp in Sources */,
 				3368E7272982155D0074B885 /* glad.c in Sources */,
+				3368E738298DB7AF0074B885 /* resource_manager.cpp in Sources */,
+				3368E73B298DB82F0074B885 /* texture.cpp in Sources */,
 				3368E72D29843D3C0074B885 /* WindowManager.cpp in Sources */,
+				3368E735298DB7540074B885 /* game.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
