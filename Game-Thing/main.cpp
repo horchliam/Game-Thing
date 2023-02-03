@@ -3,6 +3,10 @@
 #include <GLFW/glfw3.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 // My headers
 #include "Window.hpp"
@@ -16,6 +20,12 @@ void processInput(GLFWwindow *window);
 
 // Globals
 GLFWwindow* window;
+glm::mat4 transform = glm::mat4(1.0f);
+// Camera
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+float yaw = -90.0f;
 
 // Settings
 const unsigned int SCR_WIDTH = 800;
@@ -30,9 +40,12 @@ const char *vertexShaderSource = "#version 330 core\n"
 "layout (location = 2) in vec2 aTexCoord;\n"
 "out vec4 ourColor;\n"
 "out vec2 texCoord;\n"
+"uniform mat4 view;\n"
+"uniform mat4 proj;\n"
+"uniform mat4 model;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   gl_Position = proj*view*model*vec4(aPos, 1.0);\n"
 "   ourColor = vec4(aColor.x, aColor.y, aColor.z, 1.0);\n"
 "   texCoord = vec2(aTexCoord.x, 1.0f - aTexCoord.y);\n"
 "}\0";
@@ -45,6 +58,8 @@ const char *fragmentShaderSource = "#version 330 core\n"
 "{\n"
 "   FragColor = mix(texture(myTexture, texCoord), ourColor, 0.5);\n"
 "}\n\0";
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main()
 {
@@ -59,6 +74,10 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    
+    glEnable(GL_DEPTH_TEST);
+    
+    glfwSetKeyCallback(window, key_callback);
     
     // build and compile our shader program
     // ------------------------------------
@@ -167,10 +186,12 @@ int main()
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
     
-    const GLubyte* renderer = glGetString (GL_RENDERER);
-    const GLubyte* version = glGetString (GL_VERSION);
-    printf ("Renderer: %s\n", renderer);
-    printf ("OpenGL version supported %s\n", version);
+    glUseProgram(shaderProgram);
+    
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
+    unsigned int projLoc = glGetUniformLocation(shaderProgram, "proj");
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+    
     
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
@@ -182,9 +203,37 @@ int main()
         
         // render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+//        const float radius = 10.0f;
+//        float camX = sin(glfwGetTime()) * radius;
+//        float camZ = cos(glfwGetTime()) * radius;
+//        glm::mat4 view;
+//        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+        
+        glm::mat4 model = glm::mat4(1.0);
+        model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f)); // Matrix multipilcation from right to left, bottom to top
+        model = glm::rotate(model, glm::radians(-89.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(100.0f, 100.0f, 100.0f));
+        unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        
+        cameraFront = glm::normalize(glm::vec3(cos(glm::radians(yaw)), 0, sin(glm::radians(yaw))));
+        transform = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        
+        glUseProgram(shaderProgram);
+        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "view");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
         
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        
+        // Square that will rotate around the origin of the world
+        model = glm::mat4(1.0);
+        model = glm::translate(model, glm::vec3(sin(glfwGetTime())/2, 0.0f, cos(glfwGetTime())/2));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
@@ -203,4 +252,29 @@ int main()
 void processInput(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+//        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp));
+        cameraPos = cameraPos + glm::vec3(1.0f, 0, 0);
+    }
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+//        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp));
+        cameraPos = cameraPos + glm::vec3(-1.0f, 0, 0);
+    }
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+//        cameraPos = cameraPos + cameraFront;
+        cameraPos = cameraPos + glm::vec3(0, 0, -1.0f);
+    }
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+//        cameraPos = cameraPos - cameraFront;
+        cameraPos = cameraPos + glm::vec3(0, 0, 1.0f);
+    }
+    if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+        yaw += 10.0f;
+    }
+    if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+        yaw -= 10.0f;
+    }
 }
