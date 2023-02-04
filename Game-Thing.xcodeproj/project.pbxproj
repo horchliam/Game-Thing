@@ -19,6 +19,9 @@
 		3368E738298DB7AF0074B885 /* resource_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E736298DB7AF0074B885 /* resource_manager.cpp */; };
 		3368E73B298DB82F0074B885 /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E739298DB82F0074B885 /* texture.cpp */; };
 		3368E73E298DB8560074B885 /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E73C298DB8560074B885 /* shader.cpp */; };
+		3368E742298EABEB0074B885 /* sprite_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E740298EABEB0074B885 /* sprite_renderer.cpp */; };
+		3368E746298EB1C80074B885 /* sprite.vs in Sources */ = {isa = PBXBuildFile; fileRef = 3368E745298EB1C80074B885 /* sprite.vs */; };
+		3368E748298EB1EF0074B885 /* sprite.frag in Sources */ = {isa = PBXBuildFile; fileRef = 3368E747298EB1EF0074B885 /* sprite.frag */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -64,6 +67,11 @@
 		3368E73C298DB8560074B885 /* shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
 		3368E73D298DB8560074B885 /* shader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shader.h; sourceTree = "<group>"; };
 		3368E73F298DB8CC0074B885 /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
+		3368E740298EABEB0074B885 /* sprite_renderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sprite_renderer.cpp; sourceTree = "<group>"; };
+		3368E741298EABEB0074B885 /* sprite_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sprite_renderer.h; sourceTree = "<group>"; };
+		3368E745298EB1C80074B885 /* sprite.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite.vs; sourceTree = "<group>"; };
+		3368E747298EB1EF0074B885 /* sprite.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite.frag; sourceTree = "<group>"; };
+		3368E749298EB2620074B885 /* awesomeface.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = awesomeface.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +109,8 @@
 		330199B62980B4CF000CE96E /* Game-Thing */ = {
 			isa = PBXGroup;
 			children = (
+				3368E744298EB1970074B885 /* shaders */,
+				3368E743298EB18B0074B885 /* textures */,
 				330199B72980B4CF000CE96E /* main.cpp */,
 				3368E728298438320074B885 /* Window.hpp */,
 				3368E72B29843D3C0074B885 /* WindowManager.cpp */,
@@ -114,6 +124,8 @@
 				3368E73C298DB8560074B885 /* shader.cpp */,
 				3368E73D298DB8560074B885 /* shader.h */,
 				3368E73F298DB8CC0074B885 /* stb_image.h */,
+				3368E740298EABEB0074B885 /* sprite_renderer.cpp */,
+				3368E741298EABEB0074B885 /* sprite_renderer.h */,
 			);
 			path = "Game-Thing";
 			sourceTree = "<group>";
@@ -126,6 +138,23 @@
 				330199BF298211AE000CE96E /* OpenGL.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3368E743298EB18B0074B885 /* textures */ = {
+			isa = PBXGroup;
+			children = (
+				3368E749298EB2620074B885 /* awesomeface.png */,
+			);
+			path = textures;
+			sourceTree = "<group>";
+		};
+		3368E744298EB1970074B885 /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				3368E745298EB1C80074B885 /* sprite.vs */,
+				3368E747298EB1EF0074B885 /* sprite.frag */,
+			);
+			path = shaders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -187,6 +216,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3368E73E298DB8560074B885 /* shader.cpp in Sources */,
+				3368E746298EB1C80074B885 /* sprite.vs in Sources */,
+				3368E748298EB1EF0074B885 /* sprite.frag in Sources */,
+				3368E742298EABEB0074B885 /* sprite_renderer.cpp in Sources */,
 				330199B82980B4CF000CE96E /* main.cpp in Sources */,
 				3368E7272982155D0074B885 /* glad.c in Sources */,
 				3368E738298DB7AF0074B885 /* resource_manager.cpp in Sources */,
