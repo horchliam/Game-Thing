@@ -24,6 +24,7 @@
 		3368E748298EB1EF0074B885 /* sprite.frag in Sources */ = {isa = PBXBuildFile; fileRef = 3368E747298EB1EF0074B885 /* sprite.frag */; };
 		3368E74F298EF9810074B885 /* GameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E74D298EF9810074B885 /* GameObject.cpp */; };
 		3368E756298EFE3D0074B885 /* GameLevel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E754298EFE3D0074B885 /* GameLevel.cpp */; };
+		3368E7622991ED470074B885 /* ball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3368E7602991ED470074B885 /* ball.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -86,6 +87,8 @@
 		3368E75D298F018B0074B885 /* three.lvl */ = {isa = PBXFileReference; lastKnownFileType = text; path = three.lvl; sourceTree = "<group>"; };
 		3368E75E298F019F0074B885 /* four.lvl */ = {isa = PBXFileReference; lastKnownFileType = text; path = four.lvl; sourceTree = "<group>"; };
 		3368E75F298F04CF0074B885 /* paddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = paddle.png; sourceTree = "<group>"; };
+		3368E7602991ED470074B885 /* ball.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ball.cpp; sourceTree = "<group>"; };
+		3368E7612991ED470074B885 /* ball.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ball.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +179,8 @@
 				3368E737298DB7AF0074B885 /* resource_manager.h */,
 				3368E754298EFE3D0074B885 /* GameLevel.cpp */,
 				3368E755298EFE3D0074B885 /* GameLevel.hpp */,
+				3368E7602991ED470074B885 /* ball.cpp */,
+				3368E7612991ED470074B885 /* ball.hpp */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -283,6 +288,7 @@
 				3368E7272982155D0074B885 /* glad.c in Sources */,
 				3368E738298DB7AF0074B885 /* resource_manager.cpp in Sources */,
 				3368E73B298DB82F0074B885 /* texture.cpp in Sources */,
+				3368E7622991ED470074B885 /* ball.cpp in Sources */,
 				3368E72D29843D3C0074B885 /* WindowManager.cpp in Sources */,
 				3368E735298DB7540074B885 /* game.cpp in Sources */,
 			);

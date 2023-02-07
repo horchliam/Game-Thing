@@ -9,6 +9,7 @@
 #include "game.h"
 #include "resource_manager.h"
 #include "sprite_renderer.h"
+#include "ball.hpp"
 
 
 // Game-related State data
@@ -18,6 +19,12 @@ SpriteRenderer  *Renderer;
 const glm::vec2 PLAYER_SIZE(100.0f, 20.0f);
 // Initial velocity of the player paddle
 const float PLAYER_VELOCITY(500.0f);
+// Initial velocity of the Ball
+const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
+// Radius of the ball object
+const float BALL_RADIUS = 12.5f;
+  
+Ball     *ball;
 
 GameObject      *Player;
 
@@ -65,12 +72,16 @@ void Game::Init()
         this->Width / 2.0f - PLAYER_SIZE.x / 2.0f,
         this->Height - PLAYER_SIZE.y
     );
+    glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS,
+                                                  -BALL_RADIUS * 2.0f);
     Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("paddle"));
+    ball = new Ball(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY,
+        ResourceManager::GetTexture("face"));
 }
 
 void Game::Update(float dt)
 {
-    
+    ball->move(dt, this->Width);
 }
 
 void Game::ProcessInput(float dt)
@@ -81,16 +92,25 @@ void Game::ProcessInput(float dt)
         // move playerboard
         if (this->Keys[GLFW_KEY_A])
         {
-            if (Player->Position.x >= 0.0f)
+            if (Player->Position.x >= 0.0f) {
                 Player->Position.x -= velocity;
+                if (ball->stuck)
+                    ball->Position.x -= velocity;
+            }
         }
         if (this->Keys[GLFW_KEY_D])
         {
-            if (Player->Position.x <= this->Width - Player->Size.x)
+            if (Player->Position.x <= this->Width - Player->Size.x) {
                 Player->Position.x += velocity;
+                if (ball->stuck)
+                    ball->Position.x += velocity;
+            }
+        }
+        if (this->Keys[GLFW_KEY_SPACE]) {
+            ball->stuck = false;
         }
     }
-} 
+}
 
 void Game::Render()
 {
@@ -104,5 +124,7 @@ void Game::Render()
         Player->Draw(*Renderer);
         // draw level
         this->Levels[this->Level].Draw(*Renderer);
+        // draw ball
+        ball->Draw(*Renderer);
     }
 }
