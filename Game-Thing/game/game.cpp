@@ -10,53 +10,53 @@
 #include "resource_manager.h"
 #include "sprite_renderer.h"
 #include "ball.hpp"
+#include "ParticleGenerator.hpp"
 
 
 // Game-related State data
-SpriteRenderer  *Renderer;
+SpriteRenderer *Renderer;
+Ball *ball;
+GameObject *Player;
+ParticleGenerator *particles;
 
-// Initial size of the player paddle
-const glm::vec2 PLAYER_SIZE(100.0f, 20.0f);
-// Initial velocity of the player paddle
-const float PLAYER_VELOCITY(500.0f);
-// Initial velocity of the Ball
-const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
-// Radius of the ball object
-const float BALL_RADIUS = 12.5f;
-  
-Ball     *ball;
-
-GameObject      *Player;
+//ParticleGenerator test = ParticleGenerator();
 
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
 {
-
+    
 }
 
 Game::~Game()
 {
     delete Renderer;
+    delete ball;
+    delete Player;
+    delete particles;
 }
 
 void Game::Init()
 {
     // load shaders
     ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.frag", nullptr, "sprite");
+    ResourceManager::LoadShader("shaders/particles.vs", "shaders/particles.frag", nullptr, "particle");
     // configure shaders
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-    // set render-specific controls
-    Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
+    ResourceManager::GetShader("particle").Use().SetInteger("sprite", 0);
+    ResourceManager::GetShader("particle").SetMatrix4("projection", projection);
     // load textures
     ResourceManager::LoadTexture("textures/background.jpg", false, "background");
     ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
     ResourceManager::LoadTexture("textures/block.png", false, "block");
     ResourceManager::LoadTexture("textures/block_solid.png", false, "block_solid");
     ResourceManager::LoadTexture("textures/paddle.png", true, "paddle");
+    // set render-specific controls
+    Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
+    particles = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("face"), 500);
     // load levels
     GameLevel one; one.Load("levels/one.lvl", this->Width, this->Height / 2);
     GameLevel two; two.Load("levels/two.lvl", this->Width, this->Height / 2);
@@ -82,6 +82,16 @@ void Game::Init()
 void Game::Update(float dt)
 {
     ball->move(dt, this->Width);
+    
+    this->DoCollisions();
+    
+    particles->Update(dt, *ball, 2, glm::vec2(ball->radius / 2.0f));
+    
+    if (ball->Position.y >= this->Height) // did ball reach bottom edge?
+    {
+        this->ResetLevel();
+        this->ResetPlayer();
+    }
 }
 
 void Game::ProcessInput(float dt)
@@ -124,7 +134,140 @@ void Game::Render()
         Player->Draw(*Renderer);
         // draw level
         this->Levels[this->Level].Draw(*Renderer);
+        // draw particles
+        particles->Draw();
         // draw ball
         ball->Draw(*Renderer);
     }
+}
+
+void Game::ResetPlayer() {
+    Player->Position = glm::vec2((this->Width/2) - (Player->Size.x/2),
+                                 this->Height - Player->Size.y);
+    ball->Position = glm::vec2((this->Width/2) - (ball->Size.x/2), Player->Position.y - ball->Size.y);
+    ball->stuck = true;
+}
+
+void Game::ResetLevel() {
+    for(GameObject &box : this->Levels[this->Level].Bricks) {
+        box.Destroyed = false;
+    }
+}
+
+// collision detection
+bool CheckCollision(GameObject &one, GameObject &two);
+Collision CheckCollision(Ball &one, GameObject &two);
+Direction VectorDirection(glm::vec2 closest);
+
+void Game::DoCollisions()
+{
+    for (GameObject &box : this->Levels[this->Level].Bricks)
+    {
+        if (!box.Destroyed)
+        {
+            Collision collision = CheckCollision(*ball, box);
+            if (std::get<0>(collision)) // if collision is true
+            {
+                // destroy block if not solid
+                if (!box.IsSolid)
+                    box.Destroyed = true;
+                // collision resolution
+                Direction dir = std::get<1>(collision);
+                glm::vec2 diff_vector = std::get<2>(collision);
+                if (dir == LEFT || dir == RIGHT) // horizontal collision
+                {
+                    ball->Velocity.x = -ball->Velocity.x; // reverse horizontal velocity
+                    // relocate
+                    float penetration = ball->radius - std::abs(diff_vector.x);
+                    if (dir == LEFT)
+                        ball->Position.x += penetration; // move ball to right
+                    else
+                        ball->Position.x -= penetration; // move ball to left;
+                }
+                else // vertical collision
+                {
+                    ball->Velocity.y = -ball->Velocity.y; // reverse vertical velocity
+                    // relocate
+                    float penetration = ball->radius - std::abs(diff_vector.y);
+                    if (dir == UP)
+                        ball->Position.y -= penetration; // move ball bback up
+                    else
+                        ball->Position.y += penetration; // move ball back down
+                }
+            }
+        }
+    }
+    // check collisions for player pad (unless stuck)
+    Collision result = CheckCollision(*ball, *Player);
+    if (!ball->stuck && std::get<0>(result))
+    {
+        // check where it hit the board, and change velocity based on where it hit the board
+        float centerBoard = Player->Position.x + Player->Size.x / 2.0f;
+        float distance = (ball->Position.x + ball->radius) - centerBoard;
+        float percentage = distance / (Player->Size.x / 2.0f);
+        // then move accordingly
+        float strength = 2.0f;
+        glm::vec2 oldVelocity = ball->Velocity;
+        ball->Velocity.x = INITIAL_BALL_VELOCITY.x * percentage * strength;
+        //Ball->Velocity.y = -Ball->Velocity.y;
+        ball->Velocity = glm::normalize(ball->Velocity) * glm::length(oldVelocity); // keep speed consistent over both axes (multiply by length of old velocity, so total strength is not changed)
+        // fix sticky paddle
+        ball->Velocity.y = -1.0f * abs(ball->Velocity.y);
+    }
+}
+
+bool CheckCollision(GameObject &one, GameObject &two) // AABB - AABB collision
+{
+    // collision x-axis?
+    bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
+        two.Position.x + two.Size.x >= one.Position.x;
+    // collision y-axis?
+    bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
+        two.Position.y + two.Size.y >= one.Position.y;
+    // collision only if on both axes
+    return collisionX && collisionY;
+}
+
+Collision CheckCollision(Ball &one, GameObject &two) // AABB - Circle collision
+{
+    // get center point circle first
+    glm::vec2 center(one.Position + one.radius);
+    // calculate AABB info (center, half-extents)
+    glm::vec2 aabb_half_extents(two.Size.x / 2.0f, two.Size.y / 2.0f);
+    glm::vec2 aabb_center(two.Position.x + aabb_half_extents.x, two.Position.y + aabb_half_extents.y);
+    // get difference vector between both centers
+    glm::vec2 difference = center - aabb_center;
+    glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
+    // now that we know the clamped values, add this to AABB_center and we get the value of box closest to circle
+    glm::vec2 closest = aabb_center + clamped;
+    // now retrieve vector between center circle and closest point AABB and check if length < radius
+    difference = closest - center;
+
+    if (glm::length(difference) < one.radius) // not <= since in that case a collision also occurs when object one exactly touches object two, which they are at the end of each collision resolution stage.
+        return std::make_tuple(true, VectorDirection(difference), difference);
+    else
+        return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+}
+
+// calculates which direction a vector is facing (N,E,S or W)
+Direction VectorDirection(glm::vec2 target)
+{
+    glm::vec2 compass[] = {
+        glm::vec2(0.0f, 1.0f),    // up
+        glm::vec2(1.0f, 0.0f),    // right
+        glm::vec2(0.0f, -1.0f),    // down
+        glm::vec2(-1.0f, 0.0f)    // left
+    };
+    float max = 0.0f;
+    unsigned int best_match = -1;
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        float dot_product = glm::dot(glm::normalize(target), compass[i]);
+        if (dot_product > max)
+        {
+            max = dot_product;
+            best_match = i;
+        }
+    }
+    return (Direction)best_match;
 }
