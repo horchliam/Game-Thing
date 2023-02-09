@@ -75,8 +75,6 @@ public:
     // reset
     void ResetLevel();
     void ResetPlayer();
-private:
-//    ParticleGenerator test;
 };
 
 #endif

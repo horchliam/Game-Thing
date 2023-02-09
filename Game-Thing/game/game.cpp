@@ -19,8 +19,6 @@ Ball *ball;
 GameObject *Player;
 ParticleGenerator *particles;
 
-//ParticleGenerator test = ParticleGenerator();
-
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
