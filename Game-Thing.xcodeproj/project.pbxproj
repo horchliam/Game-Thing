@@ -94,6 +94,8 @@
 		3368E7642994520A0074B885 /* ParticleGenerator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ParticleGenerator.hpp; sourceTree = "<group>"; };
 		3368E766299453750074B885 /* particles.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = particles.vs; sourceTree = "<group>"; };
 		3368E767299453960074B885 /* particles.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = particles.frag; sourceTree = "<group>"; };
+		3368E768299698130074B885 /* guiVs */ = {isa = PBXFileReference; lastKnownFileType = text; path = guiVs; sourceTree = "<group>"; };
+		3368E769299698200074B885 /* guiFrag */ = {isa = PBXFileReference; lastKnownFileType = text; path = guiFrag; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,6 +173,8 @@
 				3368E747298EB1EF0074B885 /* sprite.frag */,
 				3368E766299453750074B885 /* particles.vs */,
 				3368E767299453960074B885 /* particles.frag */,
+				3368E768299698130074B885 /* guiVs */,
+				3368E769299698200074B885 /* guiFrag */,
 			);
 			path = shaders;
 			sourceTree = "<group>";

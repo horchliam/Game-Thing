@@ -15,8 +15,11 @@
 
 // Game-related State data
 SpriteRenderer *Renderer;
+SpriteRenderer *guiRenderer;
+
 Ball *ball;
 GameObject *Player;
+GameObject *gui;
 ParticleGenerator *particles;
 
 
@@ -39,6 +42,7 @@ void Game::Init()
     // load shaders
     ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("shaders/particles.vs", "shaders/particles.frag", nullptr, "particle");
+    ResourceManager::LoadShader("shaders/guiVs", "shaders/guiFrag", nullptr, "gui");
     // configure shaders
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
@@ -46,6 +50,7 @@ void Game::Init()
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
     ResourceManager::GetShader("particle").Use().SetInteger("sprite", 0);
     ResourceManager::GetShader("particle").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("gui").Use().SetInteger("image", 0);
     // load textures
     ResourceManager::LoadTexture("textures/background.jpg", false, "background");
     ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
@@ -55,6 +60,7 @@ void Game::Init()
     // set render-specific controls
     Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
     particles = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("face"), 500);
+    guiRenderer = new SpriteRenderer(ResourceManager::GetShader("gui"));
     // load levels
     GameLevel one; one.Load("levels/one.lvl", this->Width, this->Height / 2);
     GameLevel two; two.Load("levels/two.lvl", this->Width, this->Height / 2);
@@ -73,6 +79,7 @@ void Game::Init()
     glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS,
                                                   -BALL_RADIUS * 2.0f);
     Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("paddle"));
+    gui = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("face"));
     ball = new Ball(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY,
         ResourceManager::GetTexture("face"));
 }
@@ -136,6 +143,8 @@ void Game::Render()
         particles->Draw();
         // draw ball
         ball->Draw(*Renderer);
+        
+//        gui->Draw(*guiRenderer);
     }
 }
 
