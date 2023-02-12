@@ -51,6 +51,9 @@
 		3368E728298438320074B885 /* Window.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Window.hpp; sourceTree = "<group>"; };
 		3368E72B29843D3C0074B885 /* WindowManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WindowManager.cpp; sourceTree = "<group>"; };
 		3368E72C29843D3C0074B885 /* WindowManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WindowManager.hpp; sourceTree = "<group>"; };
+		3368E77E2996B3590074B885 /* handmade2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = handmade2.png; sourceTree = "<group>"; };
+		3368E77F2996B3D30074B885 /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
+		3368E7802996B9C90074B885 /* monkeyJuice.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = monkeyJuice.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +91,8 @@
 		330199B62980B4CF000CE96E /* Game-Thing */ = {
 			isa = PBXGroup;
 			children = (
+				3368E77F2996B3D30074B885 /* stb_image.h */,
+				3368E77D2996B34E0074B885 /* assets */,
 				330199B72980B4CF000CE96E /* main.cpp */,
 				3368E728298438320074B885 /* Window.hpp */,
 				3368E72B29843D3C0074B885 /* WindowManager.cpp */,
@@ -104,6 +109,15 @@
 				330199BF298211AE000CE96E /* OpenGL.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3368E77D2996B34E0074B885 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				3368E7802996B9C90074B885 /* monkeyJuice.jpg */,
+				3368E77E2996B3590074B885 /* handmade2.png */,
+			);
+			path = assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

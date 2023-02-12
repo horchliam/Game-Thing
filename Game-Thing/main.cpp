@@ -1,6 +1,8 @@
 // external libraries
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // my headers
 #include "Window.hpp"
@@ -8,6 +10,8 @@
 
 // stds
 #include <iostream>
+#include <string>
+#include <vector>
 
 void processInput(GLFWwindow *window);
 
@@ -27,19 +31,62 @@ const char *vertexShaderSource = "#version 330 core\n"
 "out vec2 texCoord;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x -0.5, aPos.y + 0.5, aPos.z, 1.0);\n"
+"   gl_Position = vec4((aPos.x - 800)/800, (aPos.y + 520)/600, 0.0, 1.0);\n"
 "   ourColor = vec4(aColor, 1.0);\n"
-"   texCoord = vec2(aTexCoord.x, 1.0f - aTexCoord.y);\n"
+"   texCoord = vec2(aTexCoord.x, 1 - aTexCoord.y);\n"
 "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
 "in vec4 ourColor;\n"
 "in vec2 texCoord;\n"
 "uniform sampler2D myTexture;"
+//"uniform vec2 offset;"
 "void main()\n"
 "{\n"
-"   FragColor = ourColor;\n"
+//"   FragColor = texture(myTexture, vec2((texCoord.x + offset.x)/16, (texCoord.y + offset.y)/16)) * ourColor;\n"
+"   FragColor = texture(myTexture, texCoord) * ourColor;\n"
+//"   if(FragColor.r == 0) {\n" // Cheeky lil black check
+//"       FragColor = vec4(0.0, 1.0, 0.5, 0.1);\n"
+//"   }\n"
 "}\n\0";
+
+const float L_SZ = 80.0f;
+
+template <typename T>
+void appendArray(std::vector<T> &vec, T arr[], int size) {
+    for(int i = 0; i < size; i++) {
+        vec.push_back(arr[i]);
+    }
+}
+
+void string_to_vbo(std::string s, unsigned int &vbo) {
+    std::vector<float> vertices;
+    
+    for(int i = 0; i < s.length(); i++) {
+        float x = i*L_SZ;
+        float y = 0;
+        
+        int row = 3;
+        int col = 0;
+        
+        
+        float vertices_tmp[] = {
+            // positions          // colors           // texture coords
+            x+L_SZ, y+L_SZ, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/16, 1 - (1.0f + row)/16,   // top right
+            x, y+L_SZ, 0.0f,        1.0f, 0.0f, 1.0f,   (0.0f + col)/16, 1 - (1.0f + row)/16,   // top left
+            x,  y, 0.0f,            1.0f, 0.0f, 1.0f,   (0.0f + col)/16, 1 - (0.0f + row)/16,    // bottom left
+            x+L_SZ, y+L_SZ, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/16, 1 - (1.0f + row)/16,   // top right
+            x+L_SZ,  y, 0.0f,       1.0f, 0.0f, 1.0f,   (1.0f + col)/16, 1 - (0.0f + row)/16,    // bottom right
+            x,  y, 0.0f,            1.0f, 0.0f, 1.0f,   (0.0f + col)/16, 1 - (0.0f + row)/16    // bottom left
+        };
+        
+        appendArray(vertices, vertices_tmp, sizeof(vertices_tmp) / sizeof(float));
+    }
+    
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    float* v_convert = &vertices[0];
+    glBufferData(GL_ARRAY_BUFFER, s.length() * 48 * sizeof(float), v_convert, GL_DYNAMIC_DRAW);
+}
 
 int main()
 {
@@ -92,18 +139,47 @@ int main()
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
     
-    // VAO
-    float vertices[] = {
-        // positions          // colors           // texture coords
-        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
-    };
-    unsigned int indices[] = {  // note that we start from 0!
-        3, 2, 1,  // first Triangle
-        3, 0, 1   // second Triangle
-    };
+    //texture
+    unsigned int texture1, texture2;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("assets/handmade2.png", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        std::cout << width << " and " << height << std::endl;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+    
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    data = stbi_load("assets/monkeyJuice.jpg", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        std::cout << width << " and " << height << std::endl;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    
+    stbi_image_free(data);
+    glUseProgram(shaderProgram);
+    glUniform1i(glGetUniformLocation(shaderProgram, "myTexture"), 0);
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -111,12 +187,10 @@ int main()
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     
+    std::string testString = "Hello world! (in P's)";
+    string_to_vbo(testString, VBO);
+    
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
@@ -136,9 +210,10 @@ int main()
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
     
-    
-    glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
+    glUseProgram(shaderProgram);
+    
+//    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -149,7 +224,17 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glEnable (GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+//        GLfloat offset[2] = {0.0f, 3.0f};
+//        glUniform2f(glGetUniformLocation(shaderProgram, "offset"), offset[0], offset[1]);
+//        glDrawElements(GL_TRIANGLES, 6 * testString.length(), GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 6 * testString.length());
+        
+//        GLfloat offset2[2] = {1.0f, 3.0f};
+//        glUniform2f(glGetUniformLocation(shaderProgram, "offset"), offset2[0], offset2[1]);
+//        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
