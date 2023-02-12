@@ -51,6 +51,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
 "}\n\0";
 
 const float L_SZ = 80.0f;
+const int TEX_SZ = 16.0F;
 
 template <typename T>
 void appendArray(std::vector<T> &vec, T arr[], int size) {
@@ -62,25 +63,33 @@ void appendArray(std::vector<T> &vec, T arr[], int size) {
 void string_to_vbo(std::string s, unsigned int &vbo) {
     std::vector<float> vertices;
     
+    float y = 0;
+    float x = 0;
     for(int i = 0; i < s.length(); i++) {
-        float x = i*L_SZ;
-        float y = 0;
+        int ascii_code = s[i];
         
-        int row = 3;
-        int col = 0;
-        
+        // work out row and column in atlas
+        int col = ( ascii_code - ' ' ) % TEX_SZ;
+        int row = ( ascii_code - ' ' ) / TEX_SZ;
+        std::cout << "Col: " << col << " and row: " << row << std::endl;
         
         float vertices_tmp[] = {
             // positions          // colors           // texture coords
-            x+L_SZ, y+L_SZ, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/16, 1 - (1.0f + row)/16,   // top right
-            x, y+L_SZ, 0.0f,        1.0f, 0.0f, 1.0f,   (0.0f + col)/16, 1 - (1.0f + row)/16,   // top left
-            x,  y, 0.0f,            1.0f, 0.0f, 1.0f,   (0.0f + col)/16, 1 - (0.0f + row)/16,    // bottom left
-            x+L_SZ, y+L_SZ, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/16, 1 - (1.0f + row)/16,   // top right
-            x+L_SZ,  y, 0.0f,       1.0f, 0.0f, 1.0f,   (1.0f + col)/16, 1 - (0.0f + row)/16,    // bottom right
-            x,  y, 0.0f,            1.0f, 0.0f, 1.0f,   (0.0f + col)/16, 1 - (0.0f + row)/16    // bottom left
+            x+L_SZ, y+L_SZ, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top right
+            x, y+L_SZ, 0.0f,        1.0f, 0.0f, 1.0f,   (0.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top left
+            x,  y, 0.0f,            1.0f, 0.0f, 1.0f,   (0.0f + col)/TEX_SZ, 1 - (1.0f + row)/TEX_SZ,    // bottom left
+            x+L_SZ, y+L_SZ, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top right
+            x+L_SZ,  y, 0.0f,       1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (1.0f + row)/TEX_SZ,    // bottom right
+            x,  y, 0.0f,            1.0f, 0.0f, 1.0f,   (0.0f + col)/TEX_SZ, 1 - (1.0f + row)/TEX_SZ    // bottom left
         };
         
         appendArray(vertices, vertices_tmp, sizeof(vertices_tmp) / sizeof(float));
+        
+        x += L_SZ;
+        if(x >= 1500.0f) {
+            y -= L_SZ;
+            x = 0;
+        }
     }
     
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -187,7 +196,7 @@ int main()
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     
-    std::string testString = "Hello world! (in P's)";
+    std::string testString = "It was the best of times it was the blurst of times!? You stupid monkey!!!";
     string_to_vbo(testString, VBO);
     
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
