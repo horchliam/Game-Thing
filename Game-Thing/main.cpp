@@ -31,7 +31,7 @@ const char *vertexShaderSource = "#version 330 core\n"
 "out vec2 texCoord;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4((aPos.x - 800)/800, (aPos.y + 520)/600, 0.0, 1.0);\n"
+"   gl_Position = vec4((aPos.x/400) - 1, 1 - (aPos.y/300), 0.0, 1.0);\n"
 "   ourColor = vec4(aColor, 1.0);\n"
 "   texCoord = vec2(aTexCoord.x, 1 - aTexCoord.y);\n"
 "}\0";
@@ -43,14 +43,9 @@ const char *fragmentShaderSource = "#version 330 core\n"
 //"uniform vec2 offset;"
 "void main()\n"
 "{\n"
-//"   FragColor = texture(myTexture, vec2((texCoord.x + offset.x)/16, (texCoord.y + offset.y)/16)) * ourColor;\n"
 "   FragColor = texture(myTexture, texCoord) * ourColor;\n"
-//"   if(FragColor.r == 0) {\n" // Cheeky lil black check
-//"       FragColor = vec4(0.0, 1.0, 0.5, 0.1);\n"
-//"   }\n"
 "}\n\0";
 
-const float L_SZ = 80.0f;
 const int TEX_SZ = 16.0F;
 
 template <typename T>
@@ -60,11 +55,11 @@ void appendArray(std::vector<T> &vec, T arr[], int size) {
     }
 }
 
-void string_to_vbo(std::string s, unsigned int &vbo) {
+void string_to_vbo(std::string s, unsigned int &vbo, float x_at, float y_at, float width_at, float size) {
     std::vector<float> vertices;
     
-    float y = 0;
-    float x = 0;
+    float y = y_at + size;
+    float x = x_at;
     for(int i = 0; i < s.length(); i++) {
         int ascii_code = s[i];
         
@@ -75,20 +70,20 @@ void string_to_vbo(std::string s, unsigned int &vbo) {
         
         float vertices_tmp[] = {
             // positions          // colors           // texture coords
-            x+L_SZ, y+L_SZ, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top right
-            x, y+L_SZ, 0.0f,        1.0f, 0.0f, 1.0f,   (0.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top left
+            x+size, y-size, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top right
+            x, y-size, 0.0f,        1.0f, 0.0f, 1.0f,   (0.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top left
             x,  y, 0.0f,            1.0f, 0.0f, 1.0f,   (0.0f + col)/TEX_SZ, 1 - (1.0f + row)/TEX_SZ,    // bottom left
-            x+L_SZ, y+L_SZ, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top right
-            x+L_SZ,  y, 0.0f,       1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (1.0f + row)/TEX_SZ,    // bottom right
+            x+size, y-size, 0.0f,   1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (0.0f + row)/TEX_SZ,   // top right
+            x+size,  y, 0.0f,       1.0f, 0.0f, 1.0f,   (1.0f + col)/TEX_SZ, 1 - (1.0f + row)/TEX_SZ,    // bottom right
             x,  y, 0.0f,            1.0f, 0.0f, 1.0f,   (0.0f + col)/TEX_SZ, 1 - (1.0f + row)/TEX_SZ    // bottom left
         };
         
         appendArray(vertices, vertices_tmp, sizeof(vertices_tmp) / sizeof(float));
         
-        x += L_SZ;
-        if(x >= 1500.0f) {
-            y -= L_SZ;
-            x = 0;
+        x += 2*size/3;
+        if(x >= width_at + x_at) {
+            y += size;
+            x = x_at;
         }
     }
     
@@ -189,17 +184,31 @@ int main()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
     
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VBO2, VAO, VAO2;
     glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &VAO2);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    glGenBuffers(1, &VBO2);
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     
     std::string testString = "It was the best of times it was the blurst of times!? You stupid monkey!!!";
-    string_to_vbo(testString, VBO);
+    string_to_vbo(testString, VBO, SCR_WIDTH/2, SCR_HEIGHT/2, SCR_WIDTH/2, 30.0f);
+    string_to_vbo(testString, VBO2, 0, 0, SCR_WIDTH/2, 20.0f);
     
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    
+    glBindVertexArray(VAO2);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
@@ -239,6 +248,9 @@ int main()
 //        GLfloat offset[2] = {0.0f, 3.0f};
 //        glUniform2f(glGetUniformLocation(shaderProgram, "offset"), offset[0], offset[1]);
 //        glDrawElements(GL_TRIANGLES, 6 * testString.length(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6 * testString.length());
+        glBindVertexArray(VAO2);
         glDrawArrays(GL_TRIANGLES, 0, 6 * testString.length());
         
 //        GLfloat offset2[2] = {1.0f, 3.0f};
